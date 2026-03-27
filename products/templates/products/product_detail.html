@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Security Shop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'catalog' %}">Catalog</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-fluid rounded shadow" alt="{{ product.name }}">
+            {% else %}
+            <div class="bg-secondary d-flex align-items-center justify-content-center rounded shadow" style="height: 400px;">
+                <span class="text-white h3">No Image Available</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h1 class="mb-3">{{ product.name }}</h1>
+            <h2 class="text-primary mb-4">${{ product.price }}</h2>
+            
+            <div class="mb-4">
+                <h5>Описание</h5>
+                <p class="text-muted">{{ product.description|linebreaks }}</p>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="d-grid gap-2">
+                <a href="{% url 'add_to_cart' product.id %}?next=product_detail&product_id={{ product.id }}" class="btn btn-success btn-lg">
+                    <i class="bi bi-cart-plus"></i> В корзину
+                </a>
+                <a href="{% url 'catalog' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Назад в каталог
+                </a>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0">Please <a href="{% url 'login' %}?next={{ request.path }}">login</a> to add items to your cart.</p>
+            </div>
+            <a href="{% url 'catalog' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Назад в каталог
+            </a>
+            {% endif %}
+
+            <div class="mt-4">
+                <small class="text-muted">
+                    Добавлено {{ product.created_at|date:"F d, Y" }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

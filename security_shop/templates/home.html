@@ -8,17 +8,34 @@
     
     {% if user.is_authenticated %}
         <p class="lead">Hello, {{ user.username }}! Вы успешно вошли в аккаунт.</p>
+        {% if user.is_staff %}
+        <div class="alert alert-warning d-inline-block">
+            <i class="bi bi-shield-check"></i> You have admin privileges. You can manage products from the admin panel.
+        </div>
+        {% endif %}
         <div class="mt-4">
-            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg">Logout</a>
+            <a href="{% url 'catalog' %}" class="btn btn-primary btn-lg me-3">
+                <i class="bi bi-shop"></i> Каталог
+            </a>
+            <a href="{% url 'view_cart' %}" class="btn btn-success btn-lg me-3">
+                <i class="bi bi-cart"></i> Корзина
+            </a>
+            {% if user.is_staff %}
+            <a href="{% url 'admin:index' %}" class="btn btn-warning btn-lg me-3">
+                <i class="bi bi-gear"></i> Admin Panel
+            </a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg">Выйти</a>
         </div>
     {% else %}
         <p class="lead">Решения в области безопасности.</p>
         <div class="mt-4">
+            <a href="{% url 'catalog' %}" class="btn btn-success btn-lg me-3">
+                <i class="bi bi-shop"></i> Browse Catalog
+            </a>
             <a href="{% url 'signup' %}" class="btn btn-primary btn-lg me-3">Регистрация</a>
             <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Войти</a>
         </div>
     {% endif %}
-</div>
-
 </div>
 {% endblock %}
