@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Security Shop{% endblock %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h1 class="display-4 mb-4">🔒 Добро пожаловать в Security Shop</h1>
+    
+    {% if user.is_authenticated %}
+        <p class="lead">Hello, {{ user.username }}! Вы успешно вошли в аккаунт.</p>
+        <div class="mt-4">
+            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg">Logout</a>
+        </div>
+    {% else %}
+        <p class="lead">Решения в области безопасности.</p>
+        <div class="mt-4">
+            <a href="{% url 'signup' %}" class="btn btn-primary btn-lg me-3">Регистрация</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Войти</a>
+        </div>
+    {% endif %}
+</div>
+
+</div>
+{% endblock %}
