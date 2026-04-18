@@ -62,6 +62,13 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if perms.products.change_product and not user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'moderator_product_list' %}">
+                            <i class="bi bi-box-seam"></i> Manage products
+                        </a>
+                    </li>
+                    {% endif %}
                     {% if user.is_staff %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'admin:index' %}">
@@ -77,6 +84,8 @@
                                 Welcome, {{ user.username }}!
                                 {% if user.is_staff %}
                                 <span class="badge bg-warning text-dark">Admin</span>
+                                {% elif perms.products.change_product %}
+                                <span class="badge bg-info text-dark">Moderator</span>
                                 {% endif %}
                             </span>
                         </li>

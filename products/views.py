@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.db.models import Q
+from .forms import ProductForm
 from .models import Product, Cart, CartItem
 
 
@@ -111,3 +112,60 @@ def clear_cart(request):
         cart.items.all().delete()
         messages.success(request, 'Your cart has been cleared.')
     return redirect('view_cart')
+
+
+@permission_required('products.view_product', raise_exception=True)
+def moderator_product_list(request):
+    """List every product (including inactive) for moderators."""
+    products = Product.objects.all()
+    return render(request, 'products/moderator/product_list.html', {'products': products})
+
+
+@permission_required('products.add_product', raise_exception=True)
+def moderator_product_create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            messages.success(request, f'Product "{product.name}" was created.')
+            return redirect('moderator_product_list')
+    else:
+        form = ProductForm()
+    return render(
+        request,
+        'products/moderator/product_form.html',
+        {'form': form, 'title': 'Add product'},
+    )
+
+
+@permission_required('products.change_product', raise_exception=True)
+def moderator_product_edit(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Product "{product.name}" was updated.')
+            return redirect('moderator_product_list')
+    else:
+        form = ProductForm(instance=product)
+    return render(
+        request,
+        'products/moderator/product_form.html',
+        {'form': form, 'title': f'Edit "{product.name}"', 'product': product},
+    )
+
+
+@permission_required('products.delete_product', raise_exception=True)
+def moderator_product_delete(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        name = product.name
+        product.delete()
+        messages.success(request, f'Product "{name}" was deleted.')
+        return redirect('moderator_product_list')
+    return render(
+        request,
+        'products/moderator/product_confirm_delete.html',
+        {'product': product},
+    )
